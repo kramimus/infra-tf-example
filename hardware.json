@@ -1,0 +1,39 @@
+{
+  "provisioners": [
+    {
+      "type": "shell",
+      "inline": ["sudo amazon-linux-extras install -y ansible2"]
+    },
+    {
+      "type": "file",
+      "source": "web",
+      "destination": "/tmp"
+    },        
+    {
+      "type": "shell",
+      "inline": ["sudo mkdir -p /opt; sudo mv /tmp/web /opt/"]
+    },
+    {
+      "type": "ansible-local",
+      "playbook_file": "./playbook.yml",
+      "extra_arguments": [ "--extra-vars \"service_py=/opt/web/hardware.py\"" ]
+    }
+  ],
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "region": "us-east-1",
+      "source_ami_filter": {
+        "filters": {
+	  "virtualization-type": "hvm",
+	  "name": "amzn2-ami-hvm*x86_64-gp2"	  
+	},
+	"most_recent": true
+      },
+      "instance_type": "t2.nano",
+      "ssh_username": "ec2-user",
+      "ami_name": "web-hardware-{{timestamp}}",
+      "subnet_id": "subnet-619f585c"
+    }
+  ]
+}

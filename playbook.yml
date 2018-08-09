@@ -1,0 +1,20 @@
+---
+- hosts: localhost
+  become: yes
+  tasks:
+  - name: update packages
+    yum:
+      name: '*'
+      state: latest  
+  - name: install pip
+    yum:
+      name: python-pip
+      state: latest
+  - name: install packages
+    pip:
+      requirements: /opt/web/requirements.txt
+  - name: install supervisor
+    pip:
+       name: supervisor
+  - name: setup supervisor
+    command: "bash /opt/web/setup_supervisor.sh {{ service_py }}"
